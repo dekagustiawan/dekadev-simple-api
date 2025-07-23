@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.User;
-import com.example.demo.service.UserService;
+import com.example.demo.model.Role;
+import com.example.demo.service.RoleService;
 
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
-    private final UserService service;
+@RequestMapping("/api/roles")
+public class RoleController {
+    private final RoleService service;
 
-    public UserController(UserService service) {
+    public RoleController(RoleService service) {
         this.service = service;
     }
 
-    @GetMapping public List<User> all() { return service.getAll(); }
-    @PostMapping public User create(@RequestBody User u) { return service.create(u); }
-    @PutMapping("/{id}") public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
+    @GetMapping public List<Role> all() { return service.getAll(); }
+    @PostMapping public Role create(@RequestBody Role r) { return service.create(r); }
+    @PutMapping("/{id}") public Role update(@PathVariable Long id, @RequestBody Role r) { return service.update(id, r); }
     @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { service.delete(id); }
 }
+

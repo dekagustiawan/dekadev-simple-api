@@ -23,7 +23,7 @@ public class UserService {
   public User update(Long id, User u) {
     User existing = userRepo.findById(id).orElseThrow();
     existing.setName(u.getName());
-    existing.setEmail(u.getEmail());
+    existing.setUsername(u.getUsername());
     return userRepo.save(existing);
   }
   public void delete(Long id) { userRepo.deleteById(id); }

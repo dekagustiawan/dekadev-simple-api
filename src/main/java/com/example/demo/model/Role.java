@@ -17,26 +17,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
-    @Column(unique = true)
-    private String username;
-
-    private String password;
-
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    @JoinTable(name = "role_features",
+        joinColumns = @JoinColumn(name = "role_id"),
+        inverseJoinColumns = @JoinColumn(name = "feature_id"))
+    private Set<Feature> features;
 }
-

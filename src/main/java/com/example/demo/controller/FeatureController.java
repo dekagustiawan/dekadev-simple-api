@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.User;
-import com.example.demo.service.UserService;
+import com.example.demo.model.Feature;
+import com.example.demo.service.FeatureService;
 
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
-    private final UserService service;
+@RequestMapping("/api/features")
+public class FeatureController {
+    private final FeatureService service;
 
-    public UserController(UserService service) {
+    public FeatureController(FeatureService service) {
         this.service = service;
     }
 
-    @GetMapping public List<User> all() { return service.getAll(); }
-    @PostMapping public User create(@RequestBody User u) { return service.create(u); }
-    @PutMapping("/{id}") public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
+    @GetMapping public List<Feature> all() { return service.getAll(); }
+    @PostMapping public Feature create(@RequestBody Feature f) { return service.create(f); }
+    @PutMapping("/{id}") public Feature update(@PathVariable Long id, @RequestBody Feature f) { return service.update(id, f); }
     @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { service.delete(id); }
 }
+
