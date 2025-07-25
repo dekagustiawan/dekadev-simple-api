@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,10 +25,19 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping public List<User> all() { return service.getAll(); }
-    @PostMapping public User create(@RequestBody User u) { return service.create(u); }
-    @PutMapping("/{id}") public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
-    @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { service.delete(id); }    
+    @PreAuthorize("hasRole('Read User')")
+    @GetMapping 
+    public List<User> all() { return service.getAll(); }
+
+    @PreAuthorize("hasRole('Update User')")
+    @PutMapping("/{id}") 
+    public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
     
-    @PostMapping public User createUser(@RequestBody UserRegisDTO u) { return service.createUser(u); }
+    @PreAuthorize("hasRole('Delete User')")
+    @DeleteMapping("/{id}") 
+    public void delete(@PathVariable Long id) { service.delete(id); }    
+    
+    @PreAuthorize("hasRole('Create User')")
+    @PostMapping("/register")
+    public User createUser(@RequestBody UserRegisDTO u) { return service.createUser(u); }
 }

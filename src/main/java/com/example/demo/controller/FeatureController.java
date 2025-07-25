@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +24,20 @@ public class FeatureController {
         this.service = service;
     }
 
-    @GetMapping public List<Feature> all() { return service.getAll(); }
-    @PostMapping public Feature create(@RequestBody Feature f) { return service.create(f); }
-    @PutMapping("/{id}") public Feature update(@PathVariable Long id, @RequestBody Feature f) { return service.update(id, f); }
-    @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { service.delete(id); }
+    @PreAuthorize("hasRole('Read Feature')")
+    @GetMapping 
+    public List<Feature> all() { return service.getAll(); }
+    
+    @PreAuthorize("hasRole('Create Feature')")
+    @PostMapping 
+    public Feature create(@RequestBody Feature f) { return service.create(f); }
+    
+    @PreAuthorize("hasRole('Update Feature')")
+    @PutMapping("/{id}") 
+    public Feature update(@PathVariable Long id, @RequestBody Feature f) { return service.update(id, f); }
+    
+    @PreAuthorize("hasRole('Delete Feature')")
+    @DeleteMapping("/{id}") 
+    public void delete(@PathVariable Long id) { service.delete(id); }
 }
 
