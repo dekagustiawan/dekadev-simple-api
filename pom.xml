@@ -8,7 +8,7 @@
   </parent>
   <groupId>net.dekadev</groupId>
   <artifactId>dekadev-simple-api</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <properties>
     <java.version>17</java.version>
   </properties>
