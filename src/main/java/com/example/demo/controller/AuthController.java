@@ -56,13 +56,18 @@ public class AuthController {
             // Authenticate
             authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
+             // reset on success
+            User user = userRepo.findByUsername(username);
+
             // Load user from DB
             logger.info("find username {}", username);
-            User user = userRepo.findByUsername(username);
             if (user == null) {
                 throw new UsernameNotFoundException("User not found");
             }
-
+            
+            user.setLoginRetry(0);
+            userRepo.save(user);
+            
             logger.info("generate token {}", username);
             // Generate JWT
             String token = jwtUtil.generateToken(user); // Update this method to accept User

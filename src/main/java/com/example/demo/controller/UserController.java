@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.UserRegisDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
@@ -31,7 +32,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('Update User')")
     @PutMapping("/{id}") 
-    public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
+    public User update(@PathVariable Long id, @RequestBody UserUpdateDTO u) { return service.update(id, u); }
     
     @PreAuthorize("hasRole('Delete User')")
     @DeleteMapping("/{id}") 

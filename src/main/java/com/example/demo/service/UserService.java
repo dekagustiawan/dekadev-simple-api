@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.UserRegisDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,24 +32,36 @@ public class UserService {
     u.setId(null); 
     return userRepo.save(u); 
   }
-  public User update(Long id, User u) {
+  public User update(Long id, UserUpdateDTO u) {
+    String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     User existing = userRepo.findById(id).orElseThrow();
+    Role role = roleRepo.findById(u.getRoleId())
+        .orElseThrow(() -> new RuntimeException("Role not found"));
+
+
     existing.setName(u.getName());
     existing.setUsername(u.getUsername());
+    existing.getRoles().add(role);
+    existing.setUpdatedBy(currentUsername);
     return userRepo.save(existing);
   }
   public void delete(Long id) { userRepo.deleteById(id); }
   public void blcok(Long id) { }
 
   public User createUser(UserRegisDTO userRegisDTO) {
-      Role role = roleRepo.findById(userRegisDTO.getRoleId())
-          .orElseThrow(() -> new RuntimeException("Role not found"));
+    String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-      User user = new User();
-      user.setName(userRegisDTO.getName());
-      user.setUsername(userRegisDTO.getUsername());
-      user.setPassword(passwordEncoder.encode(userRegisDTO.getPassword()));
-      user.getRoles().add(role);
+    Role role = roleRepo.findById(userRegisDTO.getRoleId())
+        .orElseThrow(() -> new RuntimeException("Role not found"));
+
+    User user = new User();
+    user.setName(userRegisDTO.getName());
+    user.setUsername(userRegisDTO.getUsername());
+    user.setPassword(passwordEncoder.encode(userRegisDTO.getPassword()));
+    user.getRoles().add(role);
+
+    user.setCreatedBy(currentUsername);
+    user.setUpdatedBy(currentUsername);
 
       return userRepo.save(user);
   }

@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,22 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repo.findByUsername(username);
+        if (user != null) {
+            if (user.isUserDisabled()) {
+                throw new DisabledException("User account is disabled");
+            }
+
+            if (user.isPasswordExpired()) {
+                throw new CredentialsExpiredException("Password expired. Please reset your password.");
+            }
+
+            user.setLoginRetry(user.getLoginRetry() + 1);
+            
+            if (user.getLoginRetry() >= 3) {
+                user.setUserDisabled(true);
+            }
+            repo.save(user);
+        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

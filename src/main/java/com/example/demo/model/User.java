@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,5 +42,29 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @PrePersist
+    public void onCreate() {
+        createdTime = Instant.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedTime = Instant.now();
+    }
+
+    private Instant createdTime;
+    private Instant updatedTime;
+    private String createdBy;
+    private String updatedBy;
+
+    @Column(nullable = false)
+    private boolean passwordExpired = false;
+
+    @Column(nullable = false)
+    private int loginRetry = 0;
+
+    @Column(nullable = false)
+    private boolean userDisabled = false;
 }
 
