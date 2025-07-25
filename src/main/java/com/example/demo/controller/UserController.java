@@ -40,4 +40,8 @@ public class UserController {
     @PreAuthorize("hasRole('Create User')")
     @PostMapping("/register")
     public User createUser(@RequestBody UserRegisDTO u) { return service.createUser(u); }
+
+    @PreAuthorize("hasRole('Block User')")
+    @PutMapping("/blcok/{id}") 
+    public void block(@PathVariable Long id ) { service.blcok(id); }
 }

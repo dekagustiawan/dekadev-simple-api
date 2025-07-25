@@ -36,6 +36,7 @@ public class UserService {
     return userRepo.save(existing);
   }
   public void delete(Long id) { userRepo.deleteById(id); }
+  public void blcok(Long id) { }
 
   public User createUser(UserRegisDTO userRegisDTO) {
       Role role = roleRepo.findById(userRegisDTO.getRoleId())
