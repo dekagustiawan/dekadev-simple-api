@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
+import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.PasswordResetRequestDTO;
 import com.example.demo.dto.UserRegisDTO;
+import com.example.demo.dto.UserStatusUpdateRequestDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
@@ -45,4 +50,22 @@ public class UserController {
     @PreAuthorize("hasRole('Block User')")
     @PutMapping("/blcok/{id}") 
     public void block(@PathVariable Long id ) { service.blcok(id); }
+
+    @PreAuthorize("hasRole('Update User')")
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO request, Principal principal) {
+        service.resetPassword(request.getUserId(), request.getNewPassword(), principal.getName());
+        return ResponseEntity.ok("Password reset successfully");
+    }
+
+    @PreAuthorize("hasRole('Update User')")
+    @PutMapping("/{id}/status")
+    public ResponseEntity<String> updateUserStatus(@PathVariable Long id,
+                                                @RequestBody UserStatusUpdateRequestDTO request,
+                                                Principal principal) {
+        service.updateUserStatus(id, request.isDisabled(), principal.getName());
+        return ResponseEntity.ok("User status updated successfully");
+    }
+
+    
 }

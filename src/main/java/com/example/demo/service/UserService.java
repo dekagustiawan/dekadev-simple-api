@@ -8,9 +8,11 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -64,6 +66,25 @@ public class UserService {
     user.setUpdatedBy(currentUsername);
 
       return userRepo.save(user);
+  }
+  public void resetPassword(Long userId, String newPassword, String performedBy) {
+      User user = userRepo.findById(userId)
+          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+      user.setPassword(passwordEncoder.encode(newPassword));
+      user.setPasswordExpired(false); // reset flag if expired
+      user.setUpdatedBy(performedBy);
+      user.setUpdatedTime(Instant.now());
+
+      userRepo.save(user);
+  }
+  public void updateUserStatus(Long userId, boolean disabled, String updatedBy) {
+      User user = userRepo.findById(userId)
+              .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+      user.setUserDisabled(disabled);
+      user.setUpdatedBy(updatedBy);
+      user.setUpdatedTime(Instant.now());
+      userRepo.save(user);
   }
 
 }

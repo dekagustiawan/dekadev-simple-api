@@ -31,6 +31,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 throw new CredentialsExpiredException("Password expired. Please reset your password.");
             }
 
+            if (user.isUserDisabled()) {
+                throw new DisabledException("User account is disabled");
+            }
+
             user.setLoginRetry(user.getLoginRetry() + 1);
             
             if (user.getLoginRetry() >= 3) {
