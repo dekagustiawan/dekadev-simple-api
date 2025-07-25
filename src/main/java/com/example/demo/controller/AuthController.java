@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.AuthResponse;
+import com.example.demo.dto.AuthResponseDTO;
+import com.example.demo.dto.UserLoginDTO;
 import com.example.demo.model.Feature;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
-import com.example.demo.model.UserLogin;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
 
@@ -47,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody UserLogin userlogin) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody UserLoginDTO userlogin) {
         String username = userlogin.getUsername();
         String password = userlogin.getPassword();
 
@@ -79,7 +79,7 @@ public class AuthController {
                 .toList();
 
             // Return full response
-            return ResponseEntity.ok(new AuthResponse(token, username, roles, features));
+            return ResponseEntity.ok(new AuthResponseDTO(token, username, roles, features));
         } catch (BadCredentialsException e) {
             logger.warn("Invalid credentials for user: {}", username);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

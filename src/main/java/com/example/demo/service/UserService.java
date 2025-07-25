@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.UserRegisDTO;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.RoleRepository;
@@ -36,14 +37,14 @@ public class UserService {
   }
   public void delete(Long id) { userRepo.deleteById(id); }
 
-  public User createUser(String name, String username, String rawPassword, Long roleId) {
-      Role role = roleRepo.findById(roleId)
+  public User createUser(UserRegisDTO userRegisDTO) {
+      Role role = roleRepo.findById(userRegisDTO.getRoleId())
           .orElseThrow(() -> new RuntimeException("Role not found"));
 
       User user = new User();
-      user.setName(name);
-      user.setUsername(username);
-      user.setPassword(passwordEncoder.encode(rawPassword));
+      user.setName(userRegisDTO.getName());
+      user.setUsername(userRegisDTO.getUsername());
+      user.setPassword(passwordEncoder.encode(userRegisDTO.getPassword()));
       user.getRoles().add(role);
 
       return userRepo.save(user);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.UserRegisDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
@@ -27,4 +28,6 @@ public class UserController {
     @PostMapping public User create(@RequestBody User u) { return service.create(u); }
     @PutMapping("/{id}") public User update(@PathVariable Long id, @RequestBody User u) { return service.update(id, u); }
     @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { service.delete(id); }    
+    
+    @PostMapping public User createUser(@RequestBody UserRegisDTO u) { return service.createUser(u); }
 }
