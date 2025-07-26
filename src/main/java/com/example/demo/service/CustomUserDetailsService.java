@@ -20,36 +20,27 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {    
         User user = repo.findByUsername(username);
-        if (user != null) {
-            if (user.isUserDisabled()) {
-                throw new DisabledException("User account is disabled");
-            }
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
 
-            if (user.isPasswordExpired()) {
-                throw new CredentialsExpiredException("Password expired. Please reset your password.");
-            }
+        if (user.isUserDisabled()) {
+            throw new DisabledException("User account is disabled");
+        }
 
-            if (user.isUserDisabled()) {
-                throw new DisabledException("User account is disabled");
-            }
-
-            user.setLoginRetry(user.getLoginRetry() + 1);
-            
-            if (user.getLoginRetry() >= 3) {
-                user.setUserDisabled(true);
-            }
-            repo.save(user);
+        if (user.isPasswordExpired()) {
+            throw new CredentialsExpiredException("Password expired. Please reset your password.");
         }
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                    .flatMap(r -> r.getFeatures().stream())
-                    .map(f -> new SimpleGrantedAuthority("ROLE_" + f.getName()))
-                    .collect(Collectors.toSet())
-        );
+            user.getUsername(),
+            user.getPassword(),
+            user.getRoles().stream()
+                .flatMap(r -> r.getFeatures().stream())
+                .map(f -> new SimpleGrantedAuthority("ROLE_" + f.getName()))
+                .collect(Collectors.toSet()));
     }
+
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.RoleRegisDTO;
 import com.example.demo.model.Role;
 import com.example.demo.service.RoleService;
 
@@ -23,20 +24,28 @@ public class RoleController {
     public RoleController(RoleService service) {
         this.service = service;
     }
-    @PreAuthorize("hasRole('Read Role')")
-    @GetMapping 
-    public List<Role> all() { return service.getAll(); }
-    
-    @PreAuthorize("hasRole('Create Role')")
-    @PostMapping 
-    public Role create(@RequestBody Role r) { return service.create(r); }
-    
-    @PreAuthorize("hasRole('Update Role')")
-    @PutMapping("/{id}") 
-    public Role update(@PathVariable Long id, @RequestBody Role r) { return service.update(id, r); }
-    
-    @PreAuthorize("hasRole('Delete Role')")
-    @DeleteMapping("/{id}") 
-    public void delete(@PathVariable Long id) { service.delete(id); }
-}
 
+    @PreAuthorize("hasRole('Read Role')")
+    @GetMapping
+    public List<Role> all() {
+        return service.getAll();
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_Create Role')")
+    @PostMapping
+    public Role create(@RequestBody RoleRegisDTO r) {
+        return service.create(r);
+    }
+
+    @PreAuthorize("hasRole('Update Role')")
+    @PutMapping("/{id}")
+    public Role update(@PathVariable Long id, @RequestBody RoleRegisDTO r) {
+        return service.update(id, r);
+    }
+
+    @PreAuthorize("hasRole('Delete Role')")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+}

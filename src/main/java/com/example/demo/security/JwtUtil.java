@@ -29,27 +29,26 @@ public class JwtUtil {
         claims.put("username", user.getUsername());
 
         List<String> roles = user.getRoles().stream()
-            .map(Role::getName)
-            .toList();
+                .map(Role::getName)
+                .toList();
 
         List<String> features = user.getRoles().stream()
-            .flatMap(role -> role.getFeatures().stream())
-            .map(Feature::getName)
-            .distinct()
-            .toList();
+                .flatMap(role -> role.getFeatures().stream())
+                .map(Feature::getName)
+                .distinct()
+                .toList();
 
         claims.put("roles", roles);
         claims.put("features", features);
 
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(user.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hrs
-            .signWith(SignatureAlgorithm.HS256, key)
-            .compact();
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hrs
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
     }
-
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()

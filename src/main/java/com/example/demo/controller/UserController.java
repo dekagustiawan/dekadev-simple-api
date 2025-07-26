@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -32,24 +31,34 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('Read User')")
-    @GetMapping 
-    public List<User> all() { return service.getAll(); }
+    @GetMapping
+    public List<User> all() {
+        return service.getAll();
+    }
 
     @PreAuthorize("hasRole('Update User')")
-    @PutMapping("/{id}") 
-    public User update(@PathVariable Long id, @RequestBody UserUpdateDTO u) { return service.update(id, u); }
-    
+    @PutMapping("/{id}")
+    public User update(@PathVariable Long id, @RequestBody UserUpdateDTO u) {
+        return service.update(id, u);
+    }
+
     @PreAuthorize("hasRole('Delete User')")
-    @DeleteMapping("/{id}") 
-    public void delete(@PathVariable Long id) { service.delete(id); }    
-    
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+
     @PreAuthorize("hasRole('Create User')")
     @PostMapping("/register")
-    public User createUser(@RequestBody UserRegisDTO u) { return service.createUser(u); }
+    public User createUser(@RequestBody UserRegisDTO u) {
+        return service.createUser(u);
+    }
 
     @PreAuthorize("hasRole('Block User')")
-    @PutMapping("/blcok/{id}") 
-    public void block(@PathVariable Long id ) { service.blcok(id); }
+    @PutMapping("/blcok/{id}")
+    public void block(@PathVariable Long id) {
+        service.blcok(id);
+    }
 
     @PreAuthorize("hasRole('Update User')")
     @PostMapping("/reset-password")
@@ -61,11 +70,10 @@ public class UserController {
     @PreAuthorize("hasRole('Update User')")
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateUserStatus(@PathVariable Long id,
-                                                @RequestBody UserStatusUpdateRequestDTO request,
-                                                Principal principal) {
+            @RequestBody UserStatusUpdateRequestDTO request,
+            Principal principal) {
         service.updateUserStatus(id, request.isDisabled(), principal.getName());
         return ResponseEntity.ok("User status updated successfully");
     }
 
-    
 }

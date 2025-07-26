@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +25,6 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
 
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,9 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
-    
 
-    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, UserRepository userRepo, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, UserRepository userRepo,
+            PasswordEncoder passwordEncoder) {
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
         this.userRepo = userRepo;
@@ -47,50 +48,89 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody UserLoginDTO userlogin) {
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO userlogin) {
         String username = userlogin.getUsername();
         String password = userlogin.getPassword();
 
         logger.info("login {}", username);
+
         try {
-            // Authenticate
+            // Authenticate user
             authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-             // reset on success
+            // Load user and reset login retry
             User user = userRepo.findByUsername(username);
-
-            // Load user from DB
-            logger.info("find username {}", username);
             if (user == null) {
                 throw new UsernameNotFoundException("User not found");
             }
-            
-            user.setLoginRetry(0);
-            userRepo.save(user);
-            
-            logger.info("generate token {}", username);
-            // Generate JWT
-            String token = jwtUtil.generateToken(user); // Update this method to accept User
 
-            // Extract roles & features
+            user.setLoginRetry(0); // reset retry
+            userRepo.save(user);
+
+            // Generate token
+            String token = jwtUtil.generateToken(user);
+
             List<String> roles = user.getRoles().stream()
-                                    .map(Role::getName)
-                                    .toList();
+                    .map(Role::getName)
+                    .toList();
 
             List<String> features = user.getRoles().stream()
-                .flatMap(role -> role.getFeatures().stream())
-                .map(Feature::getName)
-                .distinct()
-                .toList();
+                    .flatMap(role -> role.getFeatures().stream())
+                    .map(Feature::getName)
+                    .distinct()
+                    .toList();
 
-            // Return full response
             return ResponseEntity.ok(new AuthResponseDTO(token, username, roles, features));
+
         } catch (BadCredentialsException e) {
             logger.warn("Invalid credentials for user: {}", username);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+            // Increment login retry and disable if needed
+            User user = userRepo.findByUsername(username);
+            if (user != null) {
+                int retry = user.getLoginRetry() + 1;
+                user.setLoginRetry(retry);
+
+                if (retry >= 3) {
+                    user.setUserDisabled(true);
+                    logger.warn("User {} has been disabled due to too many login failures", username);
+                }
+
+                userRepo.save(user);
+            }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "status", 401,
+                            "error", "Unauthorized",
+                            "message", "Invalid username or password"
+                    ));
+
+        } catch (DisabledException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of(
+                            "status", 403,
+                            "error", "Forbidden",
+                            "message", "Your account has been disabled"
+                    ));
+
+        } catch (CredentialsExpiredException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "status", 401,
+                            "error", "Password Expired",
+                            "message", "Your password has expired. Please reset it."
+                    ));
+
         } catch (Exception e) {
             logger.error("Unexpected login error for {}: {}", username, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "status", 500,
+                            "error", "Internal Server Error",
+                            "message", e.getMessage()
+                    ));
         }
     }
+
 }

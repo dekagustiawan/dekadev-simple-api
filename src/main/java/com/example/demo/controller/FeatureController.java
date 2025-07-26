@@ -25,19 +25,26 @@ public class FeatureController {
     }
 
     @PreAuthorize("hasRole('Read Feature')")
-    @GetMapping 
-    public List<Feature> all() { return service.getAll(); }
-    
-    @PreAuthorize("hasRole('Create Feature')")
-    @PostMapping 
-    public Feature create(@RequestBody Feature f) { return service.create(f); }
-    
-    @PreAuthorize("hasRole('Update Feature')")
-    @PutMapping("/{id}") 
-    public Feature update(@PathVariable Long id, @RequestBody Feature f) { return service.update(id, f); }
-    
-    @PreAuthorize("hasRole('Delete Feature')")
-    @DeleteMapping("/{id}") 
-    public void delete(@PathVariable Long id) { service.delete(id); }
-}
+    @GetMapping
+    public List<Feature> all() {
+        return service.getAll();
+    }
 
+    @PreAuthorize("hasRole('Create Feature')")
+    @PostMapping
+    public Feature create(@RequestBody Feature f) {
+        return service.create(f);
+    }
+
+    @PreAuthorize("hasRole('Update Feature')")
+    @PutMapping("/{id}")
+    public Feature update(@PathVariable Long id, @RequestBody Feature f) {
+        return service.update(id, f);
+    }
+
+    @PreAuthorize("hasRole('Delete Feature')")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+}

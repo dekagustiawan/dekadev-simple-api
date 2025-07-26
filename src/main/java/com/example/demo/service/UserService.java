@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 public class UserService {
-
+  
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepo;
   private final RoleRepository roleRepo;
@@ -28,18 +28,24 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public List<User> getAll() { return userRepo.findAll(); }
-  public User getById(Long id) { return userRepo.findById(id).orElse(null); }
-  public User create(User u) {
-    u.setId(null); 
-    return userRepo.save(u); 
+  public List<User> getAll() {
+    return userRepo.findAll();
   }
+
+  public User getById(Long id) {
+    return userRepo.findById(id).orElse(null);
+  }
+
+  public User create(User u) {
+    u.setId(null);
+    return userRepo.save(u);
+  }
+
   public User update(Long id, UserUpdateDTO u) {
     String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     User existing = userRepo.findById(id).orElseThrow();
     Role role = roleRepo.findById(u.getRoleId())
         .orElseThrow(() -> new RuntimeException("Role not found"));
-
 
     existing.setName(u.getName());
     existing.setUsername(u.getUsername());
@@ -47,8 +53,13 @@ public class UserService {
     existing.setUpdatedBy(currentUsername);
     return userRepo.save(existing);
   }
-  public void delete(Long id) { userRepo.deleteById(id); }
-  public void blcok(Long id) { }
+
+  public void delete(Long id) {
+    userRepo.deleteById(id);
+  }
+
+  public void blcok(Long id) {
+  }
 
   public User createUser(UserRegisDTO userRegisDTO) {
     String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -65,26 +76,28 @@ public class UserService {
     user.setCreatedBy(currentUsername);
     user.setUpdatedBy(currentUsername);
 
-      return userRepo.save(user);
+    return userRepo.save(user);
   }
+
   public void resetPassword(Long userId, String newPassword, String performedBy) {
-      User user = userRepo.findById(userId)
-          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    User user = userRepo.findById(userId)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-      user.setPassword(passwordEncoder.encode(newPassword));
-      user.setPasswordExpired(false); // reset flag if expired
-      user.setUpdatedBy(performedBy);
-      user.setUpdatedTime(Instant.now());
+    user.setPassword(passwordEncoder.encode(newPassword));
+    user.setPasswordExpired(false); // reset flag if expired
+    user.setUpdatedBy(performedBy);
+    user.setUpdatedTime(Instant.now());
 
-      userRepo.save(user);
+    userRepo.save(user);
   }
+
   public void updateUserStatus(Long userId, boolean disabled, String updatedBy) {
-      User user = userRepo.findById(userId)
-              .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-      user.setUserDisabled(disabled);
-      user.setUpdatedBy(updatedBy);
-      user.setUpdatedTime(Instant.now());
-      userRepo.save(user);
+    User user = userRepo.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    user.setUserDisabled(disabled);
+    user.setUpdatedBy(updatedBy);
+    user.setUpdatedTime(Instant.now());
+    userRepo.save(user);
   }
 
 }
