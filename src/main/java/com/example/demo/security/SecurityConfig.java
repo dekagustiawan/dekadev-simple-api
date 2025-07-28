@@ -39,30 +39,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/login", "/auth/**", "/v3/api-docs/**",
-                                "/swagger-ui/**", "/swagger-ui.html")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(e -> e
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            // Custom 401
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Unauthorized - Please log in\"}");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            // Custom 403
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Forbidden - Access denied\"}");
-                        }))
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .userDetailsService(userDetailsService)
-                .build();
-    }
+    return http
+        .csrf().disable()
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/", 
+                "/auth/**",
+                "/api/users/register",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/v3/api-docs",
+                "/swagger-resources/**",
+                "/configuration/ui",
+                "/configuration/security",
+                "/webjars/**"
+            ).permitAll()
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .userDetailsService(userDetailsService)
+        .build();
+}
 
 }
