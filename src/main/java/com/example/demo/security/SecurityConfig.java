@@ -37,30 +37,24 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // @Override
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http
-        .csrf().disable()
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/", 
-                "/auth/**",
-                "/api/users/register",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/v3/api-docs/**",
-                "/v3/api-docs",
-                "/swagger-resources/**",
-                "/configuration/ui",
-                "/configuration/security",
-                "/webjars/**"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        .userDetailsService(userDetailsService)
-        .build();
-}
-
+        return http
+            .csrf().disable()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/", 
+                    "/auth/**",
+                    "/v3/api-docs/**", 
+                    "/swagger-ui/**", 
+                    "/swagger-ui.html"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .userDetailsService(userDetailsService)
+            .build();
+    }
 }
