@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Feature;
 import com.example.demo.repository.FeatureRepository;
 
@@ -17,6 +18,11 @@ public class FeatureService {
 
     public List<Feature> getAll() {
         return repo.findAll();
+    }
+
+   public Feature getById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Feature not found with ID: " + id));
     }
 
     public Feature create(Feature feature) {

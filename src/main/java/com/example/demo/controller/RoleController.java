@@ -31,6 +31,12 @@ public class RoleController {
         return service.getAll();
     }
 
+    @PreAuthorize("hasRole('Read Role')")
+    @GetMapping("/role/{id}")
+    public Role getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
     @PreAuthorize("hasAuthority('ROLE_Create Role')")
     @PostMapping
     public Role create(@RequestBody RoleRegisDTO r) {

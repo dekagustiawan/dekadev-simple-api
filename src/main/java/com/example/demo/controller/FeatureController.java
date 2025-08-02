@@ -30,6 +30,12 @@ public class FeatureController {
         return service.getAll();
     }
 
+    @PreAuthorize("hasRole('Read Feature')")
+    @GetMapping("/feature/{id}")
+    public Feature getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
     @PreAuthorize("hasRole('Create Feature')")
     @PostMapping
     public Feature create(@RequestBody Feature f) {

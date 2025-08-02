@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.RoleRegisDTO;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Feature;
 import com.example.demo.model.Role;
 import com.example.demo.repository.FeatureRepository;
@@ -24,6 +25,11 @@ public class RoleService {
 
     public List<Role> getAll() {
         return repo.findAll();
+    }
+
+    public Role getById(Long id) {
+    return repo.findById(id)
+               .orElseThrow(() -> new NotFoundException("Feature not found with ID: " + id));
     }
 
     public Role create(RoleRegisDTO dto) {
