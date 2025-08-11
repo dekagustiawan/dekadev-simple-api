@@ -1,16 +1,21 @@
 package com.example.demo.service;
 
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository repo;

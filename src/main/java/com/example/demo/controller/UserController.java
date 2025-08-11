@@ -48,8 +48,8 @@ public class UserController {
         service.delete(id);
     }
 
-    @PreAuthorize("hasRole('Create User')")
-    @PostMapping("/register")
+    @PreAuthorize("hasAuthority('ROLE_Create User')")
+    @PostMapping
     public User createUser(@RequestBody UserRegisDTO u) {
         return service.createUser(u);
     }
