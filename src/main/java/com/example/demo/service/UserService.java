@@ -58,7 +58,7 @@ public class UserService {
     userRepo.deleteById(id);
   }
 
-  public void blcok(Long id) {
+  public void block(Long id) {
   }
 
   public User createUser(UserRegisDTO userRegisDTO) {

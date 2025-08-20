@@ -54,26 +54,26 @@ public class UserController {
         return service.createUser(u);
     }
 
-    @PreAuthorize("hasRole('Block User')")
-    @PutMapping("/blcok/{id}")
-    public void block(@PathVariable Long id) {
-        service.blcok(id);
-    }
+    // @PreAuthorize("hasRole('Block User')")
+    // @PutMapping("/block/{id}")
+    // public void block(@PathVariable Long id) {
+    //     service.block(id);
+    // }
 
-    @PreAuthorize("hasRole('Update User')")
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO request, Principal principal) {
-        service.resetPassword(request.getUserId(), request.getNewPassword(), principal.getName());
-        return ResponseEntity.ok("Password reset successfully");
-    }
+    // @PreAuthorize("hasRole('Update User')")
+    // @PostMapping("/reset-password")
+    // public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO request, Principal principal) {
+    //     service.resetPassword(request.getUserId(), request.getNewPassword(), principal.getName());
+    //     return ResponseEntity.ok("Password reset successfully");
+    // }
 
-    @PreAuthorize("hasRole('Update User')")
-    @PutMapping("/{id}/status")
-    public ResponseEntity<String> updateUserStatus(@PathVariable Long id,
-            @RequestBody UserStatusUpdateRequestDTO request,
-            Principal principal) {
-        service.updateUserStatus(id, request.isDisabled(), principal.getName());
-        return ResponseEntity.ok("User status updated successfully");
-    }
+    // @PreAuthorize("hasRole('Update User')")
+    // @PutMapping("/{id}/status")
+    // public ResponseEntity<String> updateUserStatus(@PathVariable Long id,
+    //         @RequestBody UserStatusUpdateRequestDTO request,
+    //         Principal principal) {
+    //     service.updateUserStatus(id, request.isDisabled(), principal.getName());
+    //     return ResponseEntity.ok("User status updated successfully");
+    // }
 
 }
